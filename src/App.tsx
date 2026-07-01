@@ -270,10 +270,6 @@ function App() {
                       </div>
                     ))}
                   </div>
-                  <div className="mt-5 rounded-lg border border-violet-200 bg-violet-50 p-4 text-sm leading-6 text-violet-950 dark:border-violet-900/70 dark:bg-violet-950/40 dark:text-violet-100">
-                    The Level 5 signal is that this turns delivery learning beyond one assignment into repeatable
-                    capability for other teams.
-                  </div>
                 </section>
               </div>
 
