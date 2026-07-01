@@ -1,8 +1,10 @@
 import {
   BookOpen,
   Bot,
+  Check,
   CheckCircle2,
   ClipboardCheck,
+  Copy,
   FileText,
   Gauge,
   Layers3,
@@ -15,15 +17,17 @@ import {
   Users,
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { aiGuidancePrompts } from './data/aiGuidance'
 import { categories, patterns } from './data/playbook'
 import { generateAiResponse, suggestRelatedPatterns } from './lib/aiAssist'
-import type { AiAction, Pattern, PatternCategory } from './types'
+import type { AiAction, AiGuidancePrompt, Pattern, PatternCategory } from './types'
 
 type Theme = 'light' | 'dark'
 
 const navItems = [
   { id: 'playbook', label: 'Playbook', icon: BookOpen },
   { id: 'ai-assist', label: 'AI Assist', icon: Bot },
+  { id: 'ai-guidance', label: 'AI Guidance', icon: FileText },
   { id: 'governance', label: 'Governance', icon: ShieldCheck },
   { id: 'impact', label: 'Impact', icon: TrendingUp },
 ]
@@ -43,6 +47,7 @@ function App() {
   const [selectedId, setSelectedId] = useState(patterns[0].id)
   const [aiAction, setAiAction] = useState<AiAction>('checklist')
   const [theme, setTheme] = useState<Theme>('light')
+  const [copiedPromptId, setCopiedPromptId] = useState<string | null>(null)
 
   const selectedPattern = patterns.find((pattern) => pattern.id === selectedId) ?? patterns[0]
 
@@ -72,6 +77,12 @@ function App() {
 
   const relatedPatterns = suggestRelatedPatterns(selectedPattern, patterns)
   const dark = theme === 'dark'
+
+  const copyPrompt = async (prompt: AiGuidancePrompt) => {
+    await navigator.clipboard.writeText(prompt.prompt)
+    setCopiedPromptId(prompt.id)
+    window.setTimeout(() => setCopiedPromptId(null), 1800)
+  }
 
   return (
     <div className={dark ? 'dark' : ''}>
@@ -139,7 +150,7 @@ function App() {
                 <div className="grid grid-cols-3 gap-3">
                   <SummaryStat label="Patterns" value={patterns.length.toString()} />
                   <SummaryStat label="Approved" value={patterns.filter((item) => item.maturity === 'Approved').length.toString()} />
-                  <SummaryStat label="Sections" value="4" />
+                  <SummaryStat label="Sections" value="5" />
                 </div>
               </div>
             </section>
@@ -239,6 +250,32 @@ function App() {
                         AI has the playbook context before it suggests front-end changes.
                       </p>
                     </div>
+                  </div>
+                </section>
+
+                <section id="ai-guidance" className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+                  <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                    <div>
+                      <h2 className="text-xl font-semibold text-slate-950 dark:text-white">Copy-ready AI guidance</h2>
+                      <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+                        These prompts make the playbook portable into another project. They tell AI what the delivery
+                        playbook is, how to use it, and where human technical review remains accountable.
+                      </p>
+                    </div>
+                    <div className="rounded-lg border border-violet-200 bg-violet-50 px-4 py-3 text-sm font-semibold text-violet-950 dark:border-violet-800 dark:bg-violet-950 dark:text-violet-100">
+                      Ready to copy into project instructions
+                    </div>
+                  </div>
+
+                  <div className="mt-5 grid gap-4">
+                    {aiGuidancePrompts.map((prompt) => (
+                      <PromptCard
+                        key={prompt.id}
+                        prompt={prompt}
+                        copied={copiedPromptId === prompt.id}
+                        onCopy={() => void copyPrompt(prompt)}
+                      />
+                    ))}
                   </div>
                 </section>
 
@@ -377,6 +414,38 @@ function AiButton({ active, label, onClick }: { active: boolean; label: string; 
     >
       {label}
     </button>
+  )
+}
+
+function PromptCard({
+  prompt,
+  copied,
+  onCopy,
+}: {
+  prompt: AiGuidancePrompt
+  copied: boolean
+  onCopy: () => void
+}) {
+  return (
+    <article className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950">
+      <div className="flex flex-col gap-3 border-b border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h3 className="text-base font-semibold text-slate-950 dark:text-white">{prompt.title}</h3>
+          <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{prompt.purpose}</p>
+        </div>
+        <button
+          type="button"
+          onClick={onCopy}
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-300 hover:text-violet-800 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-violet-600"
+        >
+          {copied ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
+          {copied ? 'Copied' : 'Copy prompt'}
+        </button>
+      </div>
+      <pre className="max-h-72 overflow-auto whitespace-pre-wrap p-4 text-sm leading-6 text-slate-700 dark:text-slate-300">
+        {prompt.prompt}
+      </pre>
+    </article>
   )
 }
 
