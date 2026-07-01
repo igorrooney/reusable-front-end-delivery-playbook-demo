@@ -519,7 +519,7 @@ function PatternDetail({
 }) {
   return (
     <aside className="xl:sticky xl:top-8 xl:self-start" aria-label="Selected pattern detail">
-      <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+      <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6 xl:max-h-[calc(100vh-4rem)] xl:overflow-y-auto xl:overscroll-contain">
         <div className="flex items-start justify-between gap-4">
           <div>
             <CategoryPill category={pattern.category} />
