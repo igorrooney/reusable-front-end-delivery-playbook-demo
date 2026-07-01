@@ -1,6 +1,5 @@
 import {
   BookOpen,
-  Bot,
   Check,
   CheckCircle2,
   ClipboardCheck,
@@ -12,7 +11,6 @@ import {
   Moon,
   Search,
   ShieldCheck,
-  Sparkles,
   Sun,
   TrendingUp,
   Users,
@@ -21,14 +19,12 @@ import { useMemo, useState } from 'react'
 import { aiGuidancePrompts } from './data/aiGuidance'
 import { categories, patterns } from './data/playbook'
 import { playbookDocumentContent, playbookDocumentPath } from './data/playbookDocument'
-import { generateAiResponse, suggestRelatedPatterns } from './lib/aiAssist'
-import type { AiAction, AiGuidancePrompt, Pattern, PatternCategory } from './types'
+import type { AiGuidancePrompt, Pattern, PatternCategory } from './types'
 
 type Theme = 'light' | 'dark'
 
 const navItems = [
   { id: 'playbook', label: 'Playbook', icon: BookOpen },
-  { id: 'ai-assist', label: 'AI Assist', icon: Bot },
   { id: 'ai-guidance', label: 'AI Guidance', icon: FileText },
   { id: 'governance', label: 'Governance', icon: ShieldCheck },
   { id: 'impact', label: 'Impact', icon: TrendingUp },
@@ -47,7 +43,6 @@ function App() {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<(typeof categories)[number]>('All')
   const [selectedId, setSelectedId] = useState(patterns[0].id)
-  const [aiAction, setAiAction] = useState<AiAction>('checklist')
   const [theme, setTheme] = useState<Theme>('light')
   const [copiedPromptId, setCopiedPromptId] = useState<string | null>(null)
   const [playbookCopied, setPlaybookCopied] = useState(false)
@@ -72,11 +67,6 @@ function App() {
       return categoryMatches && (!normalisedQuery || searchableText.includes(normalisedQuery))
     })
   }, [category, query])
-
-  const aiResponse = useMemo(
-    () => generateAiResponse(aiAction, selectedPattern, patterns),
-    [aiAction, selectedPattern],
-  )
 
   const relatedPatterns = suggestRelatedPatterns(selectedPattern, patterns)
   const dark = theme === 'dark'
@@ -159,7 +149,7 @@ function App() {
                 <div className="grid grid-cols-3 gap-3">
                   <SummaryStat label="Patterns" value={patterns.length.toString()} />
                   <SummaryStat label="Approved" value={patterns.filter((item) => item.maturity === 'Approved').length.toString()} />
-                  <SummaryStat label="Sections" value="5" />
+                  <SummaryStat label="Sections" value="4" />
                 </div>
               </div>
             </section>
@@ -219,46 +209,6 @@ function App() {
                         No patterns match this search. Try a category such as accessibility, review, forms, or states.
                       </div>
                     ) : null}
-                  </div>
-                </section>
-
-                <section id="ai-assist" className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
-                  <div className="flex items-start gap-3">
-                    <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-200">
-                      <Sparkles size={19} aria-hidden="true" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-semibold text-slate-950 dark:text-white">AI assist</h2>
-                      <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">
-                        Use the playbook as approved context for AI-assisted project work. AI can help draft changes
-                        that follow the same patterns, but CGI technical leads remain responsible for validation and
-                        quality. AI is a helper, not an authority.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-5 grid gap-3 md:grid-cols-3">
-                    <AiButton active={aiAction === 'checklist'} onClick={() => setAiAction('checklist')} label="Draft a project checklist from this pattern" />
-                    <AiButton active={aiAction === 'related-patterns'} onClick={() => setAiAction('related-patterns')} label="Find playbook guidance for a change" />
-                    <AiButton active={aiAction === 'review-themes'} onClick={() => setAiAction('review-themes')} label="Capture review themes for the playbook" />
-                  </div>
-
-                  <pre className="mt-5 min-h-52 whitespace-pre-wrap rounded-lg border border-slate-200 bg-slate-950 p-5 text-sm leading-6 text-slate-100 shadow-inner dark:border-slate-700">
-                    {aiResponse}
-                  </pre>
-
-                  <div className="mt-5 grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950 md:grid-cols-[auto_1fr]">
-                    <div className="grid size-10 place-items-center rounded-lg bg-white text-slate-700 ring-1 ring-slate-200 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-700">
-                      <FileText size={18} aria-hidden="true" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-semibold text-slate-950 dark:text-white">Portable AI guidance pack</h3>
-                      <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">
-                        The repo includes <span className="font-semibold">docs/frontend-delivery-playbook.md</span> and
-                        <span className="font-semibold"> docs/AGENTS.example.md</span>. Copy them into another project so
-                        AI has the playbook context before it suggests front-end changes.
-                      </p>
-                    </div>
                   </div>
                 </section>
 
@@ -452,22 +402,6 @@ function CategoryPill({ category }: { category: PatternCategory }) {
   )
 }
 
-function AiButton({ active, label, onClick }: { active: boolean; label: string; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-lg border px-4 py-3 text-left text-sm font-semibold transition ${
-        active
-          ? 'border-violet-300 bg-violet-50 text-violet-900 dark:border-violet-700 dark:bg-violet-950 dark:text-violet-100'
-          : 'border-slate-200 bg-white text-slate-600 hover:border-violet-200 hover:text-violet-800 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300'
-      }`}
-    >
-      {label}
-    </button>
-  )
-}
-
 function PromptCard({
   prompt,
   copied,
@@ -584,6 +518,20 @@ function DetailDatum({ label, value, wide = false }: { label: string; value: str
       <dd className="mt-1 text-sm font-semibold text-slate-800 dark:text-slate-100">{value}</dd>
     </div>
   )
+}
+
+function suggestRelatedPatterns(selected: Pattern, allPatterns: Pattern[]) {
+  return allPatterns
+    .filter((pattern) => pattern.id !== selected.id)
+    .map((pattern) => {
+      const sharedTags = pattern.tags.filter((tag) => selected.tags.includes(tag))
+      const categoryMatch = pattern.category === selected.category ? 1 : 0
+      return { pattern, score: sharedTags.length + categoryMatch }
+    })
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map(({ pattern }) => pattern)
 }
 
 export default App

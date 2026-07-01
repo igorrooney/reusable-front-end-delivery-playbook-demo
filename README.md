@@ -6,7 +6,7 @@ The app demonstrates:
 
 - A searchable playbook of reusable front-end patterns
 - Pattern details with guidance and review checklists
-- A mocked AI Assist experience that uses the playbook as context
+- Copy-ready AI guidance files and prompts for use in another project
 - Governance messaging for sanitised reuse and technical lead approval
 - Example impact metrics for onboarding, review quality, accessibility, and delivery confidence
 

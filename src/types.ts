@@ -14,11 +14,6 @@ export type Pattern = {
   impact: string
 }
 
-export type AiAction =
-  | 'checklist'
-  | 'related-patterns'
-  | 'review-themes'
-
 export type AiGuidancePrompt = {
   id: string
   title: string
