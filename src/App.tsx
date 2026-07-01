@@ -8,6 +8,7 @@ import {
   FileText,
   Gauge,
   Layers3,
+  ListChecks,
   Moon,
   Search,
   ShieldCheck,
@@ -17,14 +18,16 @@ import {
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { aiGuidancePrompts } from './data/aiGuidance'
+import { codeExamples } from './data/examples'
 import { categories, patterns } from './data/playbook'
 import { playbookDocumentContent, playbookDocumentPath } from './data/playbookDocument'
-import type { AiGuidancePrompt, Pattern, PatternCategory } from './types'
+import type { AiGuidancePrompt, CodeExample, Pattern, PatternCategory } from './types'
 
 type Theme = 'light' | 'dark'
 
 const navItems = [
   { id: 'playbook', label: 'Playbook', icon: BookOpen },
+  { id: 'examples', label: 'Examples', icon: ListChecks },
   { id: 'ai-guidance', label: 'AI Guidance', icon: FileText },
   { id: 'governance', label: 'Governance', icon: ShieldCheck },
   { id: 'impact', label: 'Impact', icon: TrendingUp },
@@ -45,6 +48,7 @@ function App() {
   const [selectedId, setSelectedId] = useState(patterns[0].id)
   const [theme, setTheme] = useState<Theme>('light')
   const [copiedPromptId, setCopiedPromptId] = useState<string | null>(null)
+  const [copiedExampleId, setCopiedExampleId] = useState<string | null>(null)
   const [playbookCopied, setPlaybookCopied] = useState(false)
 
   const selectedPattern = patterns.find((pattern) => pattern.id === selectedId) ?? patterns[0]
@@ -75,6 +79,12 @@ function App() {
     await navigator.clipboard.writeText(prompt.prompt)
     setCopiedPromptId(prompt.id)
     window.setTimeout(() => setCopiedPromptId(null), 1800)
+  }
+
+  const copyExample = async (example: CodeExample) => {
+    await navigator.clipboard.writeText(example.code)
+    setCopiedExampleId(example.id)
+    window.setTimeout(() => setCopiedExampleId(null), 1800)
   }
 
   const copyPlaybookDocument = async () => {
@@ -149,7 +159,7 @@ function App() {
                 <div className="grid grid-cols-3 gap-3">
                   <SummaryStat label="Patterns" value={patterns.length.toString()} />
                   <SummaryStat label="Approved" value={patterns.filter((item) => item.maturity === 'Approved').length.toString()} />
-                  <SummaryStat label="Sections" value="4" />
+                  <SummaryStat label="Sections" value="5" />
                 </div>
               </div>
             </section>
@@ -209,6 +219,32 @@ function App() {
                         No patterns match this search. Try a category such as accessibility, review, forms, or states.
                       </div>
                     ) : null}
+                  </div>
+                </section>
+
+                <section id="examples" className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+                  <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                    <div>
+                      <h2 className="text-xl font-semibold text-slate-950 dark:text-white">Sanitised code examples</h2>
+                      <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+                        Small reference snippets show how the playbook translates into implementation choices. They are
+                        intentionally generic and should be adapted through normal technical review.
+                      </p>
+                    </div>
+                    <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-semibold text-sky-950 dark:border-sky-800 dark:bg-sky-950 dark:text-sky-100">
+                      Generic reference only
+                    </div>
+                  </div>
+
+                  <div className="mt-5 grid gap-4">
+                    {codeExamples.map((example) => (
+                      <CodeExampleCard
+                        key={example.id}
+                        example={example}
+                        copied={copiedExampleId === example.id}
+                        onCopy={() => void copyExample(example)}
+                      />
+                    ))}
                   </div>
                 </section>
 
@@ -429,6 +465,46 @@ function PromptCard({
       </div>
       <pre className="max-h-72 overflow-auto whitespace-pre-wrap p-4 text-sm leading-6 text-slate-700 dark:text-slate-300">
         {prompt.prompt}
+      </pre>
+    </article>
+  )
+}
+
+function CodeExampleCard({
+  example,
+  copied,
+  onCopy,
+}: {
+  example: CodeExample
+  copied: boolean
+  onCopy: () => void
+}) {
+  return (
+    <article className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950">
+      <div className="flex flex-col gap-3 border-b border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="text-base font-semibold text-slate-950 dark:text-white">{example.title}</h3>
+            <span className="rounded-md bg-sky-50 px-2 py-1 text-xs font-semibold text-sky-700 ring-1 ring-sky-200 dark:bg-sky-950 dark:text-sky-200 dark:ring-sky-800">
+              {example.pattern}
+            </span>
+          </div>
+          <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{example.purpose}</p>
+        </div>
+        <button
+          type="button"
+          onClick={onCopy}
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-sky-300 hover:text-sky-800 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-sky-600"
+        >
+          {copied ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
+          {copied ? 'Copied' : 'Copy code'}
+        </button>
+      </div>
+      <div className="border-b border-slate-200 bg-slate-100 px-4 py-2 font-mono text-xs font-semibold text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
+        {example.fileName}
+      </div>
+      <pre className="max-h-96 overflow-auto whitespace-pre p-4 text-sm leading-6 text-slate-800 dark:text-slate-200">
+        <code>{example.code}</code>
       </pre>
     </article>
   )

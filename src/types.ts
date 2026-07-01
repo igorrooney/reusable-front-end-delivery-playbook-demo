@@ -20,3 +20,12 @@ export type AiGuidancePrompt = {
   purpose: string
   prompt: string
 }
+
+export type CodeExample = {
+  id: string
+  title: string
+  pattern: string
+  purpose: string
+  fileName: string
+  code: string
+}

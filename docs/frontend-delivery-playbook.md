@@ -147,6 +147,124 @@ Checklist:
 - Trade-offs visible
 - Sanitised content
 
+## Sanitised Code Examples
+
+These examples are generic reference snippets. They show the direction of the playbook, not mandatory implementation. Adapt them to the project architecture and review them before reuse.
+
+### Typed Component Boundary
+
+Pattern: Component Structure
+
+```tsx
+type StatusMessageProps = {
+  title: string
+  message: string
+  tone?: 'info' | 'success' | 'warning'
+}
+
+const toneClassName = {
+  info: 'statusMessage--info',
+  success: 'statusMessage--success',
+  warning: 'statusMessage--warning',
+}
+
+export function StatusMessage({
+  title,
+  message,
+  tone = 'info',
+}: StatusMessageProps) {
+  return (
+    <section className={toneClassName[tone]} aria-labelledby="status-message-title">
+      <h2 id="status-message-title">{title}</h2>
+      <p>{message}</p>
+    </section>
+  )
+}
+```
+
+### Loading, Empty, Error, Success
+
+Pattern: API And Loading States
+
+```tsx
+type ResultsState<T> =
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { status: 'empty' }
+  | { status: 'success'; items: T[] }
+
+type ResultsPanelProps<T> = {
+  state: ResultsState<T>
+  onRetry: () => void
+  renderItem: (item: T) => React.ReactNode
+}
+
+export function ResultsPanel<T>({
+  state,
+  onRetry,
+  renderItem,
+}: ResultsPanelProps<T>) {
+  if (state.status === 'loading') {
+    return <p role="status">Loading results...</p>
+  }
+
+  if (state.status === 'error') {
+    return (
+      <section role="alert">
+        <p>{state.message}</p>
+        <button type="button" onClick={onRetry}>Try again</button>
+      </section>
+    )
+  }
+
+  if (state.status === 'empty') {
+    return <p>No results match the current filters.</p>
+  }
+
+  return <ul>{state.items.map((item) => renderItem(item))}</ul>
+}
+```
+
+### Accessible Field Error
+
+Pattern: Accessibility Checks
+
+```tsx
+type TextFieldProps = {
+  id: string
+  label: string
+  value: string
+  error?: string
+  onChange: (value: string) => void
+}
+
+export function TextField({
+  id,
+  label,
+  value,
+  error,
+  onChange,
+}: TextFieldProps) {
+  const errorId = error ? `${id}-error` : undefined
+
+  return (
+    <div>
+      <label htmlFor={id}>{label}</label>
+      <input
+        id={id}
+        value={value}
+        aria-invalid={error ? 'true' : 'false'}
+        aria-describedby={errorId}
+        onChange={(event) => onChange(event.target.value)}
+      />
+      {error ? (
+        <p id={errorId} role="alert">{error}</p>
+      ) : null}
+    </div>
+  )
+}
+```
+
 ## Review Loop
 
 When repeated feedback appears across projects:
