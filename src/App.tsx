@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   ClipboardCheck,
   Copy,
+  ExternalLink,
   FileText,
   Gauge,
   Layers3,
@@ -19,6 +20,7 @@ import {
 import { useMemo, useState } from 'react'
 import { aiGuidancePrompts } from './data/aiGuidance'
 import { categories, patterns } from './data/playbook'
+import { playbookDocumentContent, playbookDocumentPath } from './data/playbookDocument'
 import { generateAiResponse, suggestRelatedPatterns } from './lib/aiAssist'
 import type { AiAction, AiGuidancePrompt, Pattern, PatternCategory } from './types'
 
@@ -48,6 +50,7 @@ function App() {
   const [aiAction, setAiAction] = useState<AiAction>('checklist')
   const [theme, setTheme] = useState<Theme>('light')
   const [copiedPromptId, setCopiedPromptId] = useState<string | null>(null)
+  const [playbookCopied, setPlaybookCopied] = useState(false)
 
   const selectedPattern = patterns.find((pattern) => pattern.id === selectedId) ?? patterns[0]
 
@@ -82,6 +85,12 @@ function App() {
     await navigator.clipboard.writeText(prompt.prompt)
     setCopiedPromptId(prompt.id)
     window.setTimeout(() => setCopiedPromptId(null), 1800)
+  }
+
+  const copyPlaybookDocument = async () => {
+    await navigator.clipboard.writeText(playbookDocumentContent)
+    setPlaybookCopied(true)
+    window.setTimeout(() => setPlaybookCopied(false), 1800)
   }
 
   return (
@@ -268,6 +277,48 @@ function App() {
                   </div>
 
                   <div className="mt-5 grid gap-4">
+                    <article className="overflow-hidden rounded-lg border border-teal-200 bg-teal-50 dark:border-teal-900/70 dark:bg-teal-950/40">
+                      <div className="flex flex-col gap-4 border-b border-teal-200 bg-white p-4 dark:border-teal-900/70 dark:bg-slate-900 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="flex gap-3">
+                          <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-teal-50 text-teal-700 ring-1 ring-teal-200 dark:bg-teal-950 dark:text-teal-200 dark:ring-teal-800">
+                            <FileText size={18} aria-hidden="true" />
+                          </div>
+                          <div>
+                            <h3 className="text-base font-semibold text-slate-950 dark:text-white">Playbook source file</h3>
+                            <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">
+                              Create this file in the target project at{' '}
+                              <span className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-100">
+                                {playbookDocumentPath}
+                              </span>
+                              , then point AI instructions at it.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => void copyPlaybookDocument()}
+                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-teal-200 bg-white px-3 py-2 text-sm font-semibold text-teal-800 shadow-sm transition hover:border-teal-400 dark:border-teal-800 dark:bg-slate-950 dark:text-teal-100"
+                          >
+                            {playbookCopied ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
+                            {playbookCopied ? 'Copied file' : 'Copy file'}
+                          </button>
+                          <a
+                            href="https://github.com/igorrooney/reusable-front-end-delivery-playbook-demo/blob/main/docs/frontend-delivery-playbook.md"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-300 hover:text-violet-800 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
+                          >
+                            <ExternalLink size={16} aria-hidden="true" />
+                            Open file
+                          </a>
+                        </div>
+                      </div>
+                      <pre className="max-h-96 overflow-auto whitespace-pre-wrap p-4 text-sm leading-6 text-slate-700 dark:text-slate-200">
+                        {playbookDocumentContent}
+                      </pre>
+                    </article>
+
                     {aiGuidancePrompts.map((prompt) => (
                       <PromptCard
                         key={prompt.id}
