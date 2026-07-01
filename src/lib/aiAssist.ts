@@ -21,10 +21,11 @@ export function generateAiResponse(
 ) {
   if (action === 'checklist') {
     return [
-      `First-draft checklist for ${selected.name}:`,
-      ...selected.checklist.map((item) => `- Confirm ${item.toLowerCase()}.`),
-      '- Capture any repeated review feedback as a candidate playbook update.',
-      '- Ask a technical lead to validate the final guidance before reuse.',
+      `Project checklist drafted from the playbook pattern: ${selected.name}`,
+      ...selected.checklist.map((item) => `- Align the change with playbook check: ${item.toLowerCase()}.`),
+      '- Ask the AI helper to reference this pattern when drafting code, tests, or review notes.',
+      '- Capture any repeated project feedback as a candidate playbook update.',
+      '- Ask a technical lead to validate the final implementation and guidance before reuse.',
     ].join('\n')
   }
 
@@ -32,22 +33,22 @@ export function generateAiResponse(
     const related = suggestRelatedPatterns(selected, allPatterns)
 
     return [
-      `Suggested related patterns for ${selected.name}:`,
+      `Playbook guidance to reference for a project change related to ${selected.name}:`,
       ...related.map(
         (pattern) =>
-          `- ${pattern.name}: shares ${pattern.category.toLowerCase()} context or tags such as ${pattern.tags
+          `- ${pattern.name}: ask the AI helper to keep suggestions consistent with this ${pattern.category.toLowerCase()} pattern and tags such as ${pattern.tags
             .slice(0, 2)
             .join(', ')}.`,
       ),
-      '- Use these as discovery prompts, not as automatic recommendations.',
+      '- Use these patterns as context for consistency, not as automatic approval.',
     ].join('\n')
   }
 
   return [
-    'Repeated review themes identified from generic demo content:',
-    '- Accessibility evidence is most useful when added before late-stage review.',
-    '- Consistent state handling reduces repeated comments on loading, empty, and error flows.',
-    '- Shared component structure helps reviewers focus on product risk instead of formatting preference.',
-    '- Technical leads should decide which themes become approved playbook guidance.',
+    'Review themes to feed back into the playbook:',
+    '- If AI-assisted changes miss accessibility evidence, strengthen the accessibility pattern prompt.',
+    '- If loading, empty, or error states vary by team, point AI at the API and loading states pattern.',
+    '- If structure debates repeat in review, reference the component structure pattern before coding starts.',
+    '- Technical leads decide which themes become approved playbook guidance.',
   ].join('\n')
 }

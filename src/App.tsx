@@ -118,7 +118,7 @@ function App() {
             <div className="mt-6 hidden rounded-lg border border-teal-200 bg-teal-50 p-4 text-sm text-teal-950 dark:border-teal-900/70 dark:bg-teal-950/50 dark:text-teal-100 lg:block">
               <p className="font-semibold">Technical review remains accountable.</p>
               <p className="mt-2 leading-6 text-teal-900/80 dark:text-teal-100/80">
-                AI can speed up discovery, but CGI technical leads approve final guidance and quality.
+                Teams can point AI at the playbook for consistent suggestions, but CGI technical leads approve final quality.
               </p>
             </div>
           </aside>
@@ -209,16 +209,17 @@ function App() {
                     <div>
                       <h2 className="text-xl font-semibold text-slate-950 dark:text-white">AI assist</h2>
                       <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">
-                        AI can speed up discovery. CGI technical leads remain responsible for validation and quality.
-                        AI is a helper, not an authority.
+                        Use the playbook as approved context for AI-assisted project work. AI can help draft changes
+                        that follow the same patterns, but CGI technical leads remain responsible for validation and
+                        quality. AI is a helper, not an authority.
                       </p>
                     </div>
                   </div>
 
                   <div className="mt-5 grid gap-3 md:grid-cols-3">
-                    <AiButton active={aiAction === 'checklist'} onClick={() => setAiAction('checklist')} label="Generate a first-draft checklist" />
-                    <AiButton active={aiAction === 'related-patterns'} onClick={() => setAiAction('related-patterns')} label="Suggest related patterns" />
-                    <AiButton active={aiAction === 'review-themes'} onClick={() => setAiAction('review-themes')} label="Summarise repeated review themes" />
+                    <AiButton active={aiAction === 'checklist'} onClick={() => setAiAction('checklist')} label="Draft a project checklist from this pattern" />
+                    <AiButton active={aiAction === 'related-patterns'} onClick={() => setAiAction('related-patterns')} label="Find playbook guidance for a change" />
+                    <AiButton active={aiAction === 'review-themes'} onClick={() => setAiAction('review-themes')} label="Capture review themes for the playbook" />
                   </div>
 
                   <pre className="mt-5 min-h-52 whitespace-pre-wrap rounded-lg border border-slate-200 bg-slate-950 p-5 text-sm leading-6 text-slate-100 shadow-inner dark:border-slate-700">
@@ -432,7 +433,8 @@ function PatternDetail({
         <div className="mt-5 flex items-start gap-3 rounded-lg border border-teal-200 bg-teal-50 p-4 dark:border-teal-900/70 dark:bg-teal-950/40">
           <Users className="mt-0.5 shrink-0 text-teal-700 dark:text-teal-200" size={18} aria-hidden="true" />
           <p className="text-sm leading-6 text-teal-950 dark:text-teal-100">
-            Technical leads approve final guidance. AI output remains a draft discovery aid and must be reviewed before reuse.
+            Technical leads approve final guidance. AI can use the playbook as context, but output remains draft project
+            support and must be reviewed before reuse.
           </p>
         </div>
       </div>
