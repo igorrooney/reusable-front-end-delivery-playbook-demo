@@ -3,6 +3,7 @@ import {
   Bot,
   CheckCircle2,
   ClipboardCheck,
+  FileText,
   Gauge,
   Layers3,
   Moon,
@@ -225,6 +226,20 @@ function App() {
                   <pre className="mt-5 min-h-52 whitespace-pre-wrap rounded-lg border border-slate-200 bg-slate-950 p-5 text-sm leading-6 text-slate-100 shadow-inner dark:border-slate-700">
                     {aiResponse}
                   </pre>
+
+                  <div className="mt-5 grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950 md:grid-cols-[auto_1fr]">
+                    <div className="grid size-10 place-items-center rounded-lg bg-white text-slate-700 ring-1 ring-slate-200 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-700">
+                      <FileText size={18} aria-hidden="true" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-semibold text-slate-950 dark:text-white">Portable AI guidance pack</h3>
+                      <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">
+                        The repo includes <span className="font-semibold">docs/frontend-delivery-playbook.md</span> and
+                        <span className="font-semibold"> docs/AGENTS.example.md</span>. Copy them into another project so
+                        AI has the playbook context before it suggests front-end changes.
+                      </p>
+                    </div>
+                  </div>
                 </section>
 
                 <section id="governance" className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">

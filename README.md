@@ -1,32 +1,49 @@
-# React + TypeScript + Vite
+# Reusable Front-End Delivery Playbook Demo
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A polished React + TypeScript demo showing how front-end delivery learning can become reusable capability.
 
-Currently, two official plugins are available:
+The app demonstrates:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- A searchable playbook of reusable front-end patterns
+- Pattern details with guidance and review checklists
+- A mocked AI Assist experience that uses the playbook as context
+- Governance messaging for sanitised reuse and technical lead approval
+- Example impact metrics for onboarding, review quality, accessibility, and delivery confidence
 
-## React Compiler
+## Using The Playbook As AI Guidance
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+This repo includes a portable guidance pack:
 
-## Expanding the Oxlint configuration
+- `docs/frontend-delivery-playbook.md`
+- `docs/AGENTS.example.md`
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+To use the playbook in another project:
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+1. Copy `docs/frontend-delivery-playbook.md` into the other project.
+2. Copy `docs/AGENTS.example.md` into the other project as `AGENTS.md`, or merge its content into an existing `AGENTS.md`.
+3. Ask AI to read `docs/frontend-delivery-playbook.md` before making front-end changes.
+
+AI should use the playbook to keep suggestions consistent, but final implementation quality still requires technical review.
+
+## Development
+
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Build
+
+```bash
+npm run build
+```
+
+## Lint
+
+```bash
+npm run lint
+```
+
+## Deployment
+
+The app deploys to GitHub Pages through `.github/workflows/deploy.yml`.
