@@ -4,5 +4,6 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/reusable-front-end-delivery-playbook-demo/',
   plugins: [react(), tailwindcss()],
 })
